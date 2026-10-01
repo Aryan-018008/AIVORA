@@ -6,6 +6,12 @@ Aivora is a web-based AI assistant designed to provide an interactive and user-f
 
 ---
 
+## Deployment
+
+Aivora is live at - https://aivora-2.onrender.com/
+
+---
+
 ## ✨ Features
 
 - 💬 Interactive AI conversation
@@ -46,20 +52,30 @@ Aivora is a web-based AI assistant designed to provide an interactive and user-f
 - Gunicorn
 - Git
 - GitHub
+- Render
 
 ---
 
-## 🏗️ Application Architecture
+## Project Structure
 
+AI Assistant/
+│
+├── main.py              
+├── requirements.txt     
+├── .gitignore           
+├── README.md            
+├── templates/
+│   └── index.html       
+└── .env                 
 
-
+---
 ## ⚙️ Getting Started
 Follow the steps below to run Aivora locally.
 ## 1. Clone the repository
-git clone https://github.com/YOUR_USERNAME/Aivora.git
+git clone https://github.com/Aryan-018008/AIVORA.git
 
 ## 2. Move into the project directory:
-cd Aivora
+cd AI Assistant
 
 ## 3. Create a virtual environment
 python -m venv env
@@ -83,7 +99,10 @@ Add:
 GROQ_API_KEY=your_groq_api_key
 
 Replace your_groq_api_key with your actual Groq API key.
-⚠️ Security
+
+--- 
+
+## ⚠️ Security
 Never commit your .env file to GitHub.
 Your .gitignore should contain:
 env/
@@ -101,6 +120,7 @@ Open your browser and visit:
 http://127.0.0.1:5000
 
 Aivora should now be running locally. 🚀
+
 ## 💬 How It Works
 When the user sends a message:
 User
@@ -184,7 +204,10 @@ User Question ──► Retriever
 - Never commit .env to GitHub.
 - Do not expose secret credentials in source code.
 - Use production environment variables when deploying.
-📌 Current Status
+
+---
+
+## 📌 Current Status
 🟢 AI Chat Interface       Completed
 🟢 Flask Backend           Completed
 🟢 Groq Integration        Completed
@@ -195,8 +218,12 @@ User Question ──► Retriever
 🟡 Vector Database         Planned
 🟡 Document Q&A            Planned
 
+---
+
 ## 👨‍💻 Author
 Aryan Bharadwaj
+
+---
 
 ## 📄 License
 This project is created for learning and educational purposes.
