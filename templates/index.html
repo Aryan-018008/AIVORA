@@ -1,13 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
 
     <title>Aivora — AI Assistant</title>
 
+    <!-- Tailwind -->
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Font Awesome -->
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -16,35 +24,939 @@
     <script>
         tailwind.config = {
             darkMode: "class"
-        }
+        };
     </script>
+
+    <style>
+
+        /* =========================================================
+           GLOBAL
+        ========================================================= */
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        button,
+        textarea {
+            font-family: inherit;
+        }
+
+        /* Prevent horizontal scrolling */
+        html,
+        body,
+        #app {
+            max-width: 100%;
+        }
+
+
+        /* =========================================================
+           APP LAYOUT
+        ========================================================= */
+
+        #app {
+            display: flex;
+            width: 100%;
+            height: 100dvh;
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+           SIDEBAR
+        ========================================================= */
+
+        #sidebar {
+            width: 288px;
+            min-width: 288px;
+            height: 100dvh;
+
+            background: white;
+            border-right: 1px solid rgb(229 231 235);
+
+            display: flex;
+            flex-direction: column;
+
+            position: relative;
+            z-index: 50;
+
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .dark #sidebar {
+            background: rgb(17 24 39);
+            border-color: rgb(31 41 55);
+        }
+
+
+        /* =========================================================
+           OVERLAY
+        ========================================================= */
+
+        #sidebarOverlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+
+            background: rgba(0, 0, 0, 0.5);
+
+            z-index: 40;
+        }
+
+
+        /* =========================================================
+           MAIN
+        ========================================================= */
+
+        #mainContent {
+            flex: 1;
+            min-width: 0;
+            width: 100%;
+            height: 100dvh;
+
+            display: flex;
+            flex-direction: column;
+
+            overflow: hidden;
+        }
+
+
+        /* =========================================================
+           HEADER
+        ========================================================= */
+
+        #topHeader {
+            height: 64px;
+            min-height: 64px;
+
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+
+            padding: 0 20px;
+
+            background: white;
+            border-bottom: 1px solid rgb(229 231 235);
+        }
+
+        .dark #topHeader {
+            background: rgb(17 24 39);
+            border-color: rgb(31 41 55);
+        }
+
+
+        /* =========================================================
+           CHAT AREA
+        ========================================================= */
+
+        #chatContainer {
+            flex: 1;
+            min-height: 0;
+            width: 100%;
+
+            overflow-y: auto;
+            overflow-x: hidden;
+
+            padding: 24px 20px;
+
+            scroll-behavior: smooth;
+        }
+
+
+        /* =========================================================
+           WELCOME SCREEN
+        ========================================================= */
+
+        #welcomeScreen {
+            width: 100%;
+            max-width: 760px;
+
+            min-height: 100%;
+
+            margin: auto;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            text-align: center;
+
+            padding: 30px 10px;
+        }
+
+
+        /* =========================================================
+           SUGGESTIONS
+        ========================================================= */
+
+        #suggestions {
+            width: 100%;
+            max-width: 620px;
+
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+
+            gap: 12px;
+            margin-top: 28px;
+        }
+
+        .suggestion {
+            width: 100%;
+            min-width: 0;
+
+            display: flex;
+            align-items: center;
+
+            gap: 12px;
+
+            padding: 14px;
+
+            border: 1px solid rgb(229 231 235);
+            border-radius: 12px;
+
+            text-align: left;
+
+            color: rgb(55 65 81);
+            background: white;
+
+            transition: all 0.2s ease;
+
+            cursor: pointer;
+        }
+
+        .suggestion:hover {
+            border-color: rgb(59 130 246);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        }
+
+        .dark .suggestion {
+            background: rgb(17 24 39);
+            border-color: rgb(55 65 81);
+            color: rgb(209 213 219);
+        }
+
+        .suggestion i {
+            flex-shrink: 0;
+        }
+
+
+        /* =========================================================
+           MESSAGES
+        ========================================================= */
+
+        #messages {
+            width: 100%;
+            max-width: 900px;
+
+            margin: 0 auto;
+
+            display: flex;
+            flex-direction: column;
+
+            gap: 20px;
+        }
+
+        .message-row {
+            width: 100%;
+            min-width: 0;
+
+            display: flex;
+        }
+
+        .message-row.user {
+            justify-content: flex-end;
+        }
+
+        .message-row.assistant {
+            justify-content: flex-start;
+        }
+
+        .message-content {
+            max-width: 88%;
+            min-width: 0;
+
+            display: flex;
+            align-items: flex-start;
+
+            gap: 10px;
+        }
+
+        .message-row.user .message-content {
+            flex-direction: row-reverse;
+        }
+
+        .message-bubble {
+            min-width: 0;
+            max-width: 100%;
+
+            padding: 12px 16px;
+
+            border-radius: 16px;
+
+            overflow-wrap: anywhere;
+            word-break: break-word;
+        }
+
+        .user-bubble {
+            background: rgb(37 99 235);
+            color: white;
+            border-top-right-radius: 5px;
+        }
+
+        .assistant-bubble {
+            background: white;
+            color: rgb(31 41 55);
+
+            border: 1px solid rgb(229 231 235);
+
+            border-top-left-radius: 5px;
+        }
+
+        .dark .assistant-bubble {
+            background: rgb(17 24 39);
+            color: rgb(229 231 235);
+            border-color: rgb(31 41 55);
+        }
+
+        .avatar {
+            width: 36px;
+            height: 36px;
+
+            min-width: 36px;
+
+            border-radius: 50%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            color: white;
+        }
+
+        .user-avatar {
+            background: rgb(55 65 81);
+        }
+
+        .assistant-avatar {
+            background: rgb(37 99 235);
+        }
+
+
+        /* =========================================================
+           INPUT AREA
+        ========================================================= */
+
+        #inputFooter {
+            flex-shrink: 0;
+
+            width: 100%;
+
+            padding: 12px 20px 16px;
+
+            background: rgb(243 244 246);
+        }
+
+        .dark #inputFooter {
+            background: rgb(3 7 18);
+        }
+
+        #inputWrapper {
+            width: 100%;
+            max-width: 900px;
+
+            margin: auto;
+        }
+
+        #inputBox {
+            width: 100%;
+
+            position: relative;
+
+            background: white;
+
+            border: 1px solid rgb(209 213 219);
+
+            border-radius: 16px;
+
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.06);
+
+            transition: border 0.2s ease;
+        }
+
+        .dark #inputBox {
+            background: rgb(17 24 39);
+            border-color: rgb(55 65 81);
+        }
+
+        #inputBox:focus-within {
+            border-color: rgb(59 130 246);
+        }
+
+        #messageInput {
+            display: block;
+
+            width: 100%;
+
+            min-height: 52px;
+            max-height: 160px;
+
+            resize: none;
+
+            border: none;
+            outline: none;
+
+            background: transparent;
+
+            color: rgb(17 24 39);
+
+            padding: 14px 58px 14px 16px;
+
+            font-size: 16px;
+
+            line-height: 1.5;
+        }
+
+        .dark #messageInput {
+            color: white;
+        }
+
+        #messageInput::placeholder {
+            color: rgb(156 163 175);
+        }
+
+        #sendButton {
+            position: absolute;
+
+            right: 7px;
+            bottom: 7px;
+
+            width: 40px;
+            height: 40px;
+
+            border: none;
+            border-radius: 11px;
+
+            background: rgb(37 99 235);
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            cursor: pointer;
+
+            transition: background 0.2s ease;
+        }
+
+        #sendButton:hover {
+            background: rgb(29 78 216);
+        }
+
+        #sendButton:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+
+        /* =========================================================
+           TYPING DOTS
+        ========================================================= */
+
+        .typing-dot {
+            width: 7px;
+            height: 7px;
+
+            background: #9ca3af;
+
+            border-radius: 50%;
+
+            animation:
+                typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+                opacity: 0.4;
+            }
+
+            30% {
+                transform: translateY(-5px);
+                opacity: 1;
+            }
+        }
+
+
+        /* =========================================================
+           SCROLLBAR
+        ========================================================= */
+
+        ::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #9ca3af;
+            border-radius: 10px;
+        }
+
+
+        /* =========================================================
+           MOBILE — <= 1023px
+        ========================================================= */
+
+        @media (max-width: 1023px) {
+
+            html,
+            body {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+            }
+
+            #app {
+                width: 100%;
+                height: 100dvh;
+                overflow: hidden;
+            }
+
+
+            /* -------------------------
+               SIDEBAR
+            ------------------------- */
+
+            #sidebar {
+                position: fixed;
+
+                top: 0;
+                left: 0;
+                bottom: 0;
+
+                width: min(288px, 85vw);
+                min-width: 0;
+
+                height: 100dvh;
+
+                z-index: 50;
+
+                transform: translateX(-100%);
+
+                transition:
+                    transform 0.3s ease-in-out;
+
+                box-shadow: 8px 0 30px rgba(0, 0, 0, 0.12);
+            }
+
+            #sidebar.mobile-open {
+                transform: translateX(0);
+            }
+
+
+            /* -------------------------
+               OVERLAY
+            ------------------------- */
+
+            #sidebarOverlay {
+                display: none;
+            }
+
+            #sidebarOverlay.mobile-visible {
+                display: block;
+            }
+
+
+            /* -------------------------
+               MAIN
+            ------------------------- */
+
+            #mainContent {
+                width: 100%;
+                min-width: 0;
+                height: 100dvh;
+            }
+
+
+            /* -------------------------
+               HEADER
+            ------------------------- */
+
+            #topHeader {
+                height: 60px;
+                min-height: 60px;
+
+                padding: 0 10px;
+            }
+
+
+            /* -------------------------
+               CHAT
+            ------------------------- */
+
+            #chatContainer {
+                width: 100%;
+
+                padding: 15px 10px;
+
+                overflow-x: hidden;
+            }
+
+
+            /* -------------------------
+               WELCOME
+            ------------------------- */
+
+            #welcomeScreen {
+                width: 100%;
+                max-width: 100%;
+
+                padding: 20px 5px;
+            }
+
+            #welcomeScreen h1 {
+                font-size: 1.65rem;
+                line-height: 1.25;
+            }
+
+            #welcomeScreen p {
+                max-width: 95%;
+            }
+
+
+            /* -------------------------
+               SUGGESTIONS
+            ------------------------- */
+
+            #suggestions {
+                grid-template-columns: 1fr;
+
+                width: 100%;
+                max-width: 520px;
+
+                gap: 10px;
+
+                margin-top: 22px;
+            }
+
+            .suggestion {
+                padding: 13px;
+
+                font-size: 14px;
+            }
+
+
+            /* -------------------------
+               MESSAGES
+            ------------------------- */
+
+            #messages {
+                width: 100%;
+                max-width: 100%;
+
+                gap: 15px;
+            }
+
+            .message-content {
+                max-width: calc(100vw - 50px);
+            }
+
+            .message-bubble {
+                max-width: 100%;
+
+                padding: 11px 13px;
+
+                font-size: 14px;
+            }
+
+            .avatar {
+                width: 32px;
+                height: 32px;
+
+                min-width: 32px;
+            }
+
+
+            /* -------------------------
+               INPUT
+            ------------------------- */
+
+            #inputFooter {
+                width: 100%;
+
+                padding: 7px 8px 9px;
+            }
+
+            #inputWrapper {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            #messageInput {
+                min-height: 50px;
+
+                font-size: 16px;
+
+                padding:
+                    13px
+                    54px
+                    13px
+                    14px;
+            }
+
+
+            /* -------------------------
+               DISCLAIMER
+            ------------------------- */
+
+            #inputFooter p {
+                margin-top: 6px;
+
+                font-size: 9px;
+            }
+
+        }
+
+
+        /* =========================================================
+           SMALL PHONES — <= 480px
+        ========================================================= */
+
+        @media (max-width: 480px) {
+
+            #topHeader {
+                height: 58px;
+                min-height: 58px;
+            }
+
+            #chatContainer {
+                padding: 10px 7px;
+            }
+
+            #welcomeScreen {
+                padding:
+                    15px
+                    3px;
+            }
+
+            #welcomeScreen h1 {
+                font-size: 1.45rem;
+            }
+
+            #welcomeScreen p {
+                font-size: 13px;
+            }
+
+
+            /* Robot icon */
+
+            #welcomeIcon {
+                width: 64px;
+                height: 64px;
+
+                margin-bottom: 18px;
+            }
+
+            #welcomeIcon i {
+                font-size: 1.8rem;
+            }
+
+
+            /* Suggestions */
+
+            #suggestions {
+                gap: 8px;
+            }
+
+            .suggestion {
+                padding: 11px;
+
+                border-radius: 10px;
+            }
+
+
+            /* Messages */
+
+            .message-content {
+                max-width: calc(100vw - 45px);
+
+                gap: 7px;
+            }
+
+            .message-bubble {
+                padding: 10px 12px;
+
+                font-size: 14px;
+
+                border-radius: 14px;
+            }
+
+            .avatar {
+                width: 30px;
+                height: 30px;
+
+                min-width: 30px;
+            }
+
+
+            /* Input */
+
+            #inputFooter {
+                padding:
+                    5px
+                    6px
+                    7px;
+            }
+
+            #messageInput {
+                min-height: 48px;
+
+                padding:
+                    12px
+                    52px
+                    12px
+                    12px;
+            }
+
+            #sendButton {
+                width: 38px;
+                height: 38px;
+
+                right: 5px;
+                bottom: 5px;
+            }
+
+        }
+
+
+        /* =========================================================
+           VERY SMALL PHONES — <= 360px
+        ========================================================= */
+
+        @media (max-width: 360px) {
+
+            #welcomeScreen h1 {
+                font-size: 1.3rem;
+            }
+
+            #welcomeScreen p {
+                font-size: 12px;
+            }
+
+            .suggestion {
+                font-size: 13px;
+            }
+
+            .message-bubble {
+                font-size: 13px;
+            }
+
+            #messageInput {
+                font-size: 16px;
+            }
+
+        }
+
+
+        /* =========================================================
+           DESKTOP — >= 1024px
+        ========================================================= */
+
+        @media (min-width: 1024px) {
+
+            #sidebar {
+                position: relative;
+
+                transform: translateX(0);
+
+                width: 288px;
+                min-width: 288px;
+            }
+
+            #sidebarOverlay {
+                display: none !important;
+            }
+
+            #mobileMenuButton {
+                display: none;
+            }
+
+        }
+
+
+        /* =========================================================
+           DARK MODE
+        ========================================================= */
+
+        .dark .assistant-bubble {
+            background: rgb(17 24 39);
+        }
+
+
+        /* =========================================================
+           SAFE MEDIA ELEMENTS
+        ========================================================= */
+
+        img,
+        video,
+        canvas,
+        iframe {
+            max-width: 100%;
+        }
+
+    </style>
+
 </head>
+
 
 <body class="bg-gray-100 dark:bg-gray-950 transition-colors duration-300">
 
-<div class="flex h-screen overflow-hidden">
+<div id="app">
 
-    <!-- MOBILE OVERLAY -->
+
+    <!-- =========================================================
+         MOBILE OVERLAY
+    ========================================================= -->
+
     <div
         id="sidebarOverlay"
-        onclick="toggleSidebar()"
-        class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"
+        onclick="closeSidebar()"
     ></div>
 
 
-    <!-- ================= SIDEBAR ================= -->
+    <!-- =========================================================
+         SIDEBAR
+    ========================================================= -->
 
-    <aside
-        id="sidebar"
-        class="fixed lg:relative z-50
-               w-72 max-w-[85vw]
-               h-full
-               bg-white dark:bg-gray-900
-               border-r border-gray-200 dark:border-gray-800
-               flex flex-col
-               transform -translate-x-full lg:translate-x-0
-               transition-transform duration-300"
-    >
+    <aside id="sidebar">
+
 
         <!-- Logo -->
 
@@ -65,8 +977,10 @@
 
                     <div>
 
-                        <h1 class="font-bold text-lg
-                                   text-gray-900 dark:text-white">
+                        <h1
+                            class="font-bold text-lg
+                                   text-gray-900 dark:text-white"
+                        >
                             Aivora
                         </h1>
 
@@ -82,7 +996,7 @@
                 <!-- Mobile close -->
 
                 <button
-                    onclick="toggleSidebar()"
+                    onclick="closeSidebar()"
                     class="lg:hidden w-9 h-9
                            rounded-lg
                            hover:bg-gray-100
@@ -102,7 +1016,7 @@
         <div class="p-4">
 
             <button
-                onclick="clearChat(); closeSidebarOnMobile()"
+                onclick="clearChat(); closeSidebar()"
                 class="w-full flex items-center justify-center gap-2
                        bg-blue-600 hover:bg-blue-700
                        text-white py-3 rounded-xl
@@ -184,29 +1098,27 @@
     </aside>
 
 
-    <!-- ================= MAIN ================= -->
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================= -->
 
-    <main class="flex-1 flex flex-col min-w-0 w-full">
+    <main id="mainContent">
 
 
-        <!-- HEADER -->
+        <!-- =====================================================
+             HEADER
+        ===================================================== -->
 
-        <header
-            class="h-16 shrink-0
-                   bg-white dark:bg-gray-900
-                   border-b
-                   border-gray-200
-                   dark:border-gray-800
-                   flex items-center
-                   justify-between
-                   px-3 sm:px-5"
-        >
+        <header id="topHeader">
+
 
             <div class="flex items-center gap-3">
 
-                <!-- Mobile Menu -->
+
+                <!-- Mobile menu -->
 
                 <button
+                    id="mobileMenuButton"
                     onclick="toggleSidebar()"
                     class="lg:hidden
                            w-10 h-10
@@ -214,7 +1126,8 @@
                            hover:bg-gray-100
                            dark:hover:bg-gray-800
                            text-gray-600
-                           dark:text-gray-300"
+                           dark:text-gray-300
+                           flex items-center justify-center"
                 >
 
                     <i class="fa-solid fa-bars text-xl"></i>
@@ -231,6 +1144,7 @@
                     >
                         Aivora
                     </h2>
+
 
                     <div class="flex items-center gap-2">
 
@@ -251,7 +1165,7 @@
             </div>
 
 
-            <!-- Clear button -->
+            <!-- Clear -->
 
             <button
                 onclick="clearChat()"
@@ -261,7 +1175,8 @@
                        hover:bg-gray-100
                        dark:hover:bg-gray-800
                        text-gray-600
-                       dark:text-gray-300"
+                       dark:text-gray-300
+                       flex items-center justify-center"
             >
 
                 <i class="fa-solid fa-trash"></i>
@@ -271,53 +1186,43 @@
         </header>
 
 
-        <!-- ================= CHAT AREA ================= -->
+        <!-- =====================================================
+             CHAT AREA
+        ===================================================== -->
 
-        <section
-            id="chatContainer"
-            class="flex-1
-                   overflow-y-auto
-                   px-3 sm:px-5
-                   py-4 sm:py-6"
-        >
+        <section id="chatContainer">
+
 
             <!-- Welcome -->
 
             <div
                 id="welcomeScreen"
-                class="max-w-3xl
-                       mx-auto
-                       flex flex-col
-                       items-center
-                       justify-center
-                       min-h-full
-                       text-center
-                       py-8"
             >
 
+                <!-- Robot -->
+
                 <div
-                    class="w-16 h-16
-                           sm:w-20 sm:h-20
+                    id="welcomeIcon"
+                    class="w-20 h-20
                            rounded-3xl
                            bg-blue-600
                            text-white
                            flex items-center
                            justify-center
                            shadow-xl
-                           mb-5 sm:mb-6"
+                           mb-6"
                 >
 
                     <i
                         class="fa-solid fa-robot
-                               text-3xl sm:text-4xl"
+                               text-4xl"
                     ></i>
 
                 </div>
 
 
                 <h1
-                    class="text-2xl
-                           sm:text-3xl
+                    class="text-3xl
                            md:text-4xl
                            font-bold
                            text-gray-900
@@ -344,20 +1249,14 @@
 
                 <!-- Suggestions -->
 
-                <div
-                    class="grid
-                           grid-cols-1
-                           sm:grid-cols-2
-                           gap-3
-                           mt-7
-                           w-full
-                           max-w-xl"
-                >
+                <div id="suggestions">
+
 
                     <button
                         onclick="useSuggestion('Explain Python functions')"
                         class="suggestion"
                     >
+
                         <i class="fa-solid fa-code"></i>
 
                         <span>
@@ -371,6 +1270,7 @@
                         onclick="useSuggestion('Give me a coding challenge')"
                         class="suggestion"
                     >
+
                         <i class="fa-solid fa-terminal"></i>
 
                         <span>
@@ -384,6 +1284,7 @@
                         onclick="useSuggestion('Explain artificial intelligence')"
                         class="suggestion"
                     >
+
                         <i class="fa-solid fa-brain"></i>
 
                         <span>
@@ -397,6 +1298,7 @@
                         onclick="useSuggestion('Help me build a project')"
                         class="suggestion"
                     >
+
                         <i class="fa-solid fa-lightbulb"></i>
 
                         <span>
@@ -404,6 +1306,7 @@
                         </span>
 
                     </button>
+
 
                 </div>
 
@@ -414,77 +1317,43 @@
 
             <div
                 id="messages"
-                class="max-w-4xl
-                       mx-auto
-                       space-y-5 sm:space-y-6
-                       hidden"
+                class="hidden"
             ></div>
+
 
         </section>
 
 
-        <!-- ================= INPUT ================= -->
+        <!-- =====================================================
+             INPUT
+        ===================================================== -->
 
-        <footer
-            class="shrink-0
-                   p-2 sm:p-4
-                   bg-gray-100
-                   dark:bg-gray-950"
-        >
+        <footer id="inputFooter">
 
-            <div class="max-w-4xl mx-auto">
 
-                <div
-                    class="relative
-                           bg-white
-                           dark:bg-gray-900
-                           border
-                           border-gray-300
-                           dark:border-gray-700
-                           rounded-2xl
-                           shadow-lg
-                           focus-within:border-blue-500
-                           transition"
-                >
+            <div id="inputWrapper">
+
+
+                <div id="inputBox">
+
 
                     <textarea
                         id="messageInput"
                         rows="1"
                         placeholder="Message Aivora..."
-                        class="w-full
-                               resize-none
-                               bg-transparent
-                               text-gray-900
-                               dark:text-white
-                               placeholder-gray-400
-                               outline-none
-                               px-4 sm:px-5
-                               py-3.5 sm:py-4
-                               pr-14
-                               max-h-40
-                               text-sm sm:text-base"
+                        autocomplete="off"
                     ></textarea>
 
 
                     <button
                         id="sendButton"
                         onclick="sendMessage()"
-                        class="absolute
-                               right-2
-                               bottom-2
-                               w-10 h-10
-                               rounded-xl
-                               bg-blue-600
-                               hover:bg-blue-700
-                               text-white
-                               flex items-center
-                               justify-center
-                               transition"
                     >
 
                         <i class="fa-solid fa-arrow-up"></i>
 
                     </button>
+
 
                 </div>
 
@@ -494,741 +1363,685 @@
                            text-[10px]
                            sm:text-xs
                            text-gray-400
-                           mt-2 sm:mt-3
-                           px-2"
+                           mt-2"
                 >
                     Aivora can make mistakes.
                     Verify important information.
                 </p>
 
+
             </div>
 
         </footer>
+
 
     </main>
 
 </div>
 
 
+<!-- =============================================================
+     JAVASCRIPT
+============================================================= -->
+
 <script>
 
-const messageInput =
-    document.getElementById("messageInput");
 
-const messages =
-    document.getElementById("messages");
+    /* =========================================================
+       ELEMENTS
+    ========================================================= */
 
-const welcomeScreen =
-    document.getElementById("welcomeScreen");
+    const messageInput =
+        document.getElementById("messageInput");
 
-const chatContainer =
-    document.getElementById("chatContainer");
+    const messages =
+        document.getElementById("messages");
 
-const sendButton =
-    document.getElementById("sendButton");
+    const welcomeScreen =
+        document.getElementById("welcomeScreen");
 
-const sidebar =
-    document.getElementById("sidebar");
+    const chatContainer =
+        document.getElementById("chatContainer");
 
-const sidebarOverlay =
-    document.getElementById("sidebarOverlay");
+    const sendButton =
+        document.getElementById("sendButton");
 
+    const sidebar =
+        document.getElementById("sidebar");
 
-// ================= SEND MESSAGE =================
-
-async function sendMessage() {
-
-    const userInput =
-        messageInput.value.trim();
-
-    if (!userInput) return;
+    const sidebarOverlay =
+        document.getElementById("sidebarOverlay");
 
 
-    welcomeScreen.classList.add("hidden");
+    /* =========================================================
+       SEND MESSAGE
+    ========================================================= */
 
-    messages.classList.remove("hidden");
+    async function sendMessage() {
 
+        const userInput =
+            messageInput.value.trim();
 
-    addMessage(userInput, "user");
-
-
-    messageInput.value = "";
-
-    autoResize();
-
-
-    sendButton.disabled = true;
+        if (!userInput) return;
 
 
-    const typingId =
-        showTyping();
+        welcomeScreen.classList.add("hidden");
+
+        messages.classList.remove("hidden");
 
 
-    try {
-
-        const response =
-            await fetch("/chat", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-                    message: userInput
-                })
-
-            });
+        addMessage(
+            userInput,
+            "user"
+        );
 
 
-        if (!response.ok) {
-            throw new Error("Server error");
+        messageInput.value = "";
+
+        autoResize();
+
+
+        sendButton.disabled = true;
+
+
+        const typingId =
+            showTyping();
+
+
+        try {
+
+            const response =
+                await fetch("/chat", {
+
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+
+                    body: JSON.stringify({
+                        message: userInput
+                    })
+
+                });
+
+
+            if (!response.ok) {
+                throw new Error(
+                    "Server error"
+                );
+            }
+
+
+            const data =
+                await response.json();
+
+
+            removeTyping(
+                typingId
+            );
+
+
+            addMessage(
+                data.reply,
+                "assistant"
+            );
+
         }
 
 
-        const data =
-            await response.json();
+        catch (error) {
+
+            removeTyping(
+                typingId
+            );
 
 
-        removeTyping(typingId);
+            addMessage(
+                "⚠️ Unable to connect to Aivora. Please check the server.",
+                "assistant"
+            );
 
 
-        addMessage(
-            data.reply,
-            "assistant"
+            console.error(error);
+
+        }
+
+
+        finally {
+
+            sendButton.disabled = false;
+
+            messageInput.focus();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       ADD MESSAGE
+    ========================================================= */
+
+    function addMessage(text, sender) {
+
+        const wrapper =
+            document.createElement("div");
+
+
+        wrapper.className =
+            "message-row " +
+            (
+                sender === "user"
+                    ? "user"
+                    : "assistant"
+            );
+
+
+        if (sender === "user") {
+
+            wrapper.innerHTML = `
+
+                <div class="message-content">
+
+                    <div class="message-bubble user-bubble">
+
+                        <p class="whitespace-pre-wrap">
+                            ${escapeHTML(text)}
+                        </p>
+
+                    </div>
+
+
+                    <div class="avatar user-avatar">
+
+                        <i class="fa-solid fa-user"></i>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        else {
+
+            wrapper.innerHTML = `
+
+                <div class="message-content">
+
+                    <div class="avatar assistant-avatar">
+
+                        <i class="fa-solid fa-robot"></i>
+
+                    </div>
+
+
+                    <div class="message-bubble assistant-bubble">
+
+                        <p class="whitespace-pre-wrap">
+                            ${escapeHTML(text)}
+                        </p>
+
+
+                        <div class="mt-3 flex gap-2">
+
+                            <button
+                                onclick="copyMessage(this)"
+                                class="text-gray-400
+                                       hover:text-blue-500
+                                       text-xs"
+                            >
+
+                                <i class="fa-regular fa-copy"></i>
+                                Copy
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        messages.appendChild(
+            wrapper
         );
 
-    }
 
-    catch (error) {
-
-        removeTyping(typingId);
-
-        addMessage(
-            "⚠️ Unable to connect to Aivora. Please check the server.",
-            "assistant"
-        );
-
-        console.error(error);
+        scrollToBottom();
 
     }
 
-    finally {
 
-        sendButton.disabled = false;
+    /* =========================================================
+       TYPING
+    ========================================================= */
 
-        messageInput.focus();
+    function showTyping() {
 
-    }
-
-}
-
-
-// ================= ADD MESSAGE =================
-
-function addMessage(text, sender) {
-
-    const wrapper =
-        document.createElement("div");
+        const id =
+            "typing-" + Date.now();
 
 
-    wrapper.className =
-        sender === "user"
-        ? "flex justify-end"
-        : "flex justify-start";
+        const wrapper =
+            document.createElement("div");
 
 
-    if (sender === "user") {
+        wrapper.id = id;
+
+        wrapper.className =
+            "message-row assistant";
+
 
         wrapper.innerHTML = `
 
-            <div class="flex items-start gap-2 sm:gap-3
-                        max-w-[92%] sm:max-w-[85%]">
+            <div class="message-content">
 
-                <div
-                    class="bg-blue-600
-                           text-white
-                           rounded-2xl
-                           rounded-tr-md
-                           px-4 sm:px-5
-                           py-3
-                           shadow-sm
-                           overflow-hidden"
-                >
+                <div class="avatar assistant-avatar">
 
-                    <p class="whitespace-pre-wrap
-                              break-words
-                              text-sm sm:text-base">
-                        ${escapeHTML(text)}
-                    </p>
+                    <i class="fa-solid fa-robot"></i>
 
                 </div>
 
 
                 <div
-                    class="w-8 h-8 sm:w-9 sm:h-9
-                           shrink-0
-                           rounded-full
-                           bg-gray-700
-                           text-white
-                           flex items-center
-                           justify-center"
+                    class="message-bubble
+                           assistant-bubble"
                 >
 
-                    <i class="fa-solid fa-user text-xs sm:text-sm"></i>
+                    <div class="flex gap-1">
 
-                </div>
+                        <span class="typing-dot"></span>
 
-            </div>
-        `;
+                        <span class="typing-dot"></span>
 
-    }
-
-    else {
-
-        wrapper.innerHTML = `
-
-            <div class="flex items-start
-                        gap-2 sm:gap-3
-                        max-w-[96%] sm:max-w-[90%]">
-
-                <div
-                    class="w-8 h-8 sm:w-9 sm:h-9
-                           shrink-0
-                           rounded-full
-                           bg-blue-600
-                           text-white
-                           flex items-center
-                           justify-center"
-                >
-
-                    <i class="fa-solid fa-robot text-xs sm:text-sm"></i>
-
-                </div>
-
-
-                <div
-                    class="bg-white
-                           dark:bg-gray-900
-                           border
-                           border-gray-200
-                           dark:border-gray-800
-                           rounded-2xl
-                           rounded-tl-md
-                           px-4 sm:px-5
-                           py-3
-                           shadow-sm
-                           min-w-0
-                           overflow-hidden"
-                >
-
-                    <p
-                        class="text-gray-800
-                               dark:text-gray-200
-                               whitespace-pre-wrap
-                               break-words
-                               text-sm sm:text-base"
-                    >
-                        ${escapeHTML(text)}
-                    </p>
-
-
-                    <div class="mt-3 flex gap-2">
-
-                        <button
-                            onclick="copyMessage(this)"
-                            class="text-gray-400
-                                   hover:text-blue-500
-                                   text-xs"
-                        >
-
-                            <i class="fa-regular fa-copy"></i>
-                            Copy
-
-                        </button>
+                        <span class="typing-dot"></span>
 
                     </div>
 
                 </div>
 
             </div>
+
         `;
 
-    }
 
-
-    messages.appendChild(wrapper);
-
-    scrollToBottom();
-
-}
-
-
-// ================= TYPING =================
-
-function showTyping() {
-
-    const id =
-        "typing-" + Date.now();
-
-
-    const wrapper =
-        document.createElement("div");
-
-
-    wrapper.id = id;
-
-    wrapper.className =
-        "flex justify-start";
-
-
-    wrapper.innerHTML = `
-
-        <div class="flex items-start gap-2 sm:gap-3">
-
-            <div
-                class="w-8 h-8 sm:w-9 sm:h-9
-                       rounded-full
-                       bg-blue-600
-                       text-white
-                       flex items-center
-                       justify-center"
-            >
-
-                <i class="fa-solid fa-robot text-xs"></i>
-
-            </div>
-
-
-            <div
-                class="bg-white
-                       dark:bg-gray-900
-                       border
-                       border-gray-200
-                       dark:border-gray-800
-                       rounded-2xl
-                       rounded-tl-md
-                       px-5 py-4"
-            >
-
-                <div class="flex gap-1">
-
-                    <span class="typing-dot"></span>
-                    <span class="typing-dot"></span>
-                    <span class="typing-dot"></span>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    messages.appendChild(wrapper);
-
-    scrollToBottom();
-
-    return id;
-
-}
-
-
-function removeTyping(id) {
-
-    const element =
-        document.getElementById(id);
-
-    if (element) {
-        element.remove();
-    }
-
-}
-
-
-// ================= COPY =================
-
-function copyMessage(button) {
-
-    const container =
-        button.closest(
-            ".bg-white, .dark\\:bg-gray-900"
+        messages.appendChild(
+            wrapper
         );
 
 
-    const message =
-        container.querySelector("p").innerText;
+        scrollToBottom();
 
 
-    navigator.clipboard.writeText(message);
+        return id;
+
+    }
 
 
-    button.innerHTML =
-        '<i class="fa-solid fa-check"></i> Copied';
+    function removeTyping(id) {
+
+        const element =
+            document.getElementById(id);
 
 
-    setTimeout(() => {
+        if (element) {
+            element.remove();
+        }
+
+    }
+
+
+    /* =========================================================
+       COPY MESSAGE
+    ========================================================= */
+
+    function copyMessage(button) {
+
+        const bubble =
+            button.closest(
+                ".assistant-bubble"
+            );
+
+
+        if (!bubble) return;
+
+
+        const message =
+            bubble.querySelector(
+                "p"
+            ).innerText;
+
+
+        navigator.clipboard.writeText(
+            message
+        );
+
 
         button.innerHTML =
-            '<i class="fa-regular fa-copy"></i> Copy';
-
-    }, 1500);
-
-}
+            '<i class="fa-solid fa-check"></i> Copied';
 
 
-// ================= CLEAR =================
+        setTimeout(() => {
 
-function clearChat() {
+            button.innerHTML =
+                '<i class="fa-regular fa-copy"></i> Copy';
 
-    messages.innerHTML = "";
-
-    messages.classList.add("hidden");
-
-    welcomeScreen.classList.remove("hidden");
-
-    messageInput.value = "";
-
-    messageInput.focus();
-
-}
-
-
-// ================= SUGGESTION =================
-
-function useSuggestion(text) {
-
-    messageInput.value = text;
-
-    closeSidebarOnMobile();
-
-    sendMessage();
-
-}
-
-
-// ================= THEME =================
-
-function toggleTheme() {
-
-    document.documentElement
-        .classList.toggle("dark");
-
-
-    const isDark =
-        document.documentElement
-        .classList.contains("dark");
-
-
-    localStorage.setItem(
-        "darkMode",
-        isDark
-    );
-
-
-    updateThemeButton();
-
-}
-
-
-function updateThemeButton() {
-
-    const isDark =
-        document.documentElement
-        .classList.contains("dark");
-
-
-    const icon =
-        document.getElementById("themeIcon");
-
-
-    const text =
-        document.getElementById("themeText");
-
-
-    if (isDark) {
-
-        icon.className =
-            "fa-solid fa-sun";
-
-        text.innerText =
-            "Light Mode";
+        }, 1500);
 
     }
 
-    else {
 
-        icon.className =
-            "fa-solid fa-moon";
+    /* =========================================================
+       CLEAR CHAT
+    ========================================================= */
 
-        text.innerText =
-            "Dark Mode";
+    function clearChat() {
 
-    }
+        messages.innerHTML = "";
 
-}
-
-
-if (
-    localStorage.getItem("darkMode")
-    === "true"
-) {
-
-    document.documentElement
-        .classList.add("dark");
-
-}
-
-
-updateThemeButton();
-
-
-// ================= SIDEBAR =================
-
-function toggleSidebar() {
-
-    sidebar.classList.toggle(
-        "-translate-x-full"
-    );
-
-    sidebarOverlay.classList.toggle(
-        "hidden"
-    );
-
-}
-
-
-function closeSidebarOnMobile() {
-
-    if (
-        window.innerWidth < 1024
-    ) {
-
-        sidebar.classList.add(
-            "-translate-x-full"
-        );
-
-        sidebarOverlay.classList.add(
+        messages.classList.add(
             "hidden"
         );
 
+        welcomeScreen.classList.remove(
+            "hidden"
+        );
+
+        messageInput.value = "";
+
+        autoResize();
+
+        messageInput.focus();
+
     }
 
-}
+
+    /* =========================================================
+       SUGGESTION
+    ========================================================= */
+
+    function useSuggestion(text) {
+
+        messageInput.value = text;
+
+        closeSidebar();
+
+        sendMessage();
+
+    }
 
 
-// ================= ENTER =================
+    /* =========================================================
+       THEME
+    ========================================================= */
 
-messageInput.addEventListener(
-    "keydown",
-    function(event) {
+    function toggleTheme() {
 
-        if (
-            event.key === "Enter"
-            && !event.shiftKey
-        ) {
+        document.documentElement
+            .classList
+            .toggle("dark");
 
-            event.preventDefault();
 
-            sendMessage();
+        const isDark =
+            document.documentElement
+                .classList
+                .contains("dark");
+
+
+        localStorage.setItem(
+            "darkMode",
+            isDark
+        );
+
+
+        updateThemeButton();
+
+    }
+
+
+    function updateThemeButton() {
+
+        const isDark =
+            document.documentElement
+                .classList
+                .contains("dark");
+
+
+        const icon =
+            document.getElementById(
+                "themeIcon"
+            );
+
+
+        const text =
+            document.getElementById(
+                "themeText"
+            );
+
+
+        if (isDark) {
+
+            icon.className =
+                "fa-solid fa-sun";
+
+            text.innerText =
+                "Light Mode";
+
+        }
+
+        else {
+
+            icon.className =
+                "fa-solid fa-moon";
+
+            text.innerText =
+                "Dark Mode";
 
         }
 
     }
-);
 
 
-// ================= AUTO RESIZE =================
+    /* =========================================================
+       LOAD THEME
+    ========================================================= */
 
-messageInput.addEventListener(
-    "input",
-    autoResize
-);
+    if (
+        localStorage.getItem(
+            "darkMode"
+        ) === "true"
+    ) {
 
+        document.documentElement
+            .classList
+            .add("dark");
 
-function autoResize() {
-
-    messageInput.style.height =
-        "auto";
-
-
-    messageInput.style.height =
-        Math.min(
-            messageInput.scrollHeight,
-            160
-        ) + "px";
-
-}
+    }
 
 
-// ================= SCROLL =================
-
-function scrollToBottom() {
-
-    setTimeout(() => {
-
-        chatContainer.scrollTop =
-            chatContainer.scrollHeight;
-
-    }, 50);
-
-}
+    updateThemeButton();
 
 
-// ================= ESCAPE HTML =================
+    /* =========================================================
+       MOBILE SIDEBAR
+    ========================================================= */
 
-function escapeHTML(text) {
+    function toggleSidebar() {
 
-    const div =
-        document.createElement("div");
+        if (
+            sidebar.classList.contains(
+                "mobile-open"
+            )
+        ) {
 
-    div.textContent = text;
+            closeSidebar();
 
-    return div.innerHTML;
+        }
 
-}
+        else {
+
+            sidebar.classList.add(
+                "mobile-open"
+            );
+
+            sidebarOverlay.classList.add(
+                "mobile-visible"
+            );
+
+            document.body.style.overflow =
+                "hidden";
+
+        }
+
+    }
+
+
+    function closeSidebar() {
+
+        sidebar.classList.remove(
+            "mobile-open"
+        );
+
+        sidebarOverlay.classList.remove(
+            "mobile-visible"
+        );
+
+        document.body.style.overflow =
+            "";
+
+    }
+
+
+    function closeSidebarOnMobile() {
+
+        if (
+            window.innerWidth < 1024
+        ) {
+
+            closeSidebar();
+
+        }
+
+    }
+
+
+    /* =========================================================
+       WINDOW RESIZE
+    ========================================================= */
+
+    window.addEventListener(
+        "resize",
+        function () {
+
+            if (
+                window.innerWidth >= 1024
+            ) {
+
+                closeSidebar();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       ENTER TO SEND
+    ========================================================= */
+
+    messageInput.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key === "Enter" &&
+                !event.shiftKey
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+
+    /* =========================================================
+       AUTO RESIZE TEXTAREA
+    ========================================================= */
+
+    messageInput.addEventListener(
+        "input",
+        autoResize
+    );
+
+
+    function autoResize() {
+
+        messageInput.style.height =
+            "auto";
+
+
+        messageInput.style.height =
+            Math.min(
+                messageInput.scrollHeight,
+                160
+            ) + "px";
+
+    }
+
+
+    /* =========================================================
+       SCROLL
+    ========================================================= */
+
+    function scrollToBottom() {
+
+        setTimeout(() => {
+
+            chatContainer.scrollTop =
+                chatContainer.scrollHeight;
+
+        }, 50);
+
+    }
+
+
+    /* =========================================================
+       ESCAPE HTML
+    ========================================================= */
+
+    function escapeHTML(text) {
+
+        const div =
+            document.createElement(
+                "div"
+            );
+
+
+        div.textContent =
+            text;
+
+
+        return div.innerHTML;
+
+    }
+
 
 </script>
 
-
-<style>
-
-.suggestion {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    padding: 14px;
-
-    border: 1px solid rgb(229 231 235);
-
-    border-radius: 12px;
-
-    text-align: left;
-
-    color: rgb(55 65 81);
-
-    background: white;
-
-    transition: 0.2s;
-
-}
-
-
-.suggestion:hover {
-
-    border-color: rgb(59 130 246);
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 5px 15px
-        rgba(0,0,0,0.08);
-
-}
-
-
-.dark .suggestion {
-
-    background: rgb(17 24 39);
-
-    border-color: rgb(55 65 81);
-
-    color: rgb(209 213 219);
-
-}
-
-
-.typing-dot {
-
-    width: 7px;
-
-    height: 7px;
-
-    background: #9ca3af;
-
-    border-radius: 50%;
-
-    animation:
-        typing 1.4s
-        infinite
-        ease-in-out;
-
-}
-
-
-.typing-dot:nth-child(2) {
-
-    animation-delay: 0.2s;
-
-}
-
-
-.typing-dot:nth-child(3) {
-
-    animation-delay: 0.4s;
-
-}
-
-
-@keyframes typing {
-
-    0%, 60%, 100% {
-
-        transform:
-            translateY(0);
-
-        opacity: 0.4;
-
-    }
-
-    30% {
-
-        transform:
-            translateY(-5px);
-
-        opacity: 1;
-
-    }
-
-}
-
-
-/* Prevent horizontal overflow */
-
-html,
-body {
-
-    max-width: 100%;
-
-    overflow-x: hidden;
-
-}
-
-
-/* Better mobile scrollbar */
-
-::-webkit-scrollbar {
-
-    width: 5px;
-
-}
-
-
-::-webkit-scrollbar-thumb {
-
-    background: #9ca3af;
-
-    border-radius: 10px;
-
-}
-
-</style>
-
 </body>
+
 </html>
