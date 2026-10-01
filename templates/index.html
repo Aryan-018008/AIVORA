@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>AIVORA | AI Assistant</title>
+    <title>Aivora — AI Assistant</title>
 
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Font Awesome -->
     <link
         rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
@@ -26,93 +24,159 @@
 
 <div class="flex h-screen overflow-hidden">
 
+    <!-- MOBILE OVERLAY -->
+    <div
+        id="sidebarOverlay"
+        onclick="toggleSidebar()"
+        class="fixed inset-0 bg-black/50 z-40 hidden lg:hidden"
+    ></div>
+
+
     <!-- ================= SIDEBAR ================= -->
+
     <aside
         id="sidebar"
-        class="w-72 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800
-               flex flex-col transition-all duration-300"
+        class="fixed lg:relative z-50
+               w-72 max-w-[85vw]
+               h-full
+               bg-white dark:bg-gray-900
+               border-r border-gray-200 dark:border-gray-800
+               flex flex-col
+               transform -translate-x-full lg:translate-x-0
+               transition-transform duration-300"
     >
 
         <!-- Logo -->
+
         <div class="p-5 border-b border-gray-200 dark:border-gray-800">
 
-            <div class="flex items-center gap-3">
+            <div class="flex items-center justify-between">
 
-                <div
-                    class="w-11 h-11 rounded-xl bg-blue-600 text-white
-                           flex items-center justify-center shadow-lg"
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-11 h-11 rounded-xl
+                               bg-blue-600 text-white
+                               flex items-center justify-center
+                               shadow-lg"
+                    >
+                        <i class="fa-solid fa-robot text-xl"></i>
+                    </div>
+
+                    <div>
+
+                        <h1 class="font-bold text-lg
+                                   text-gray-900 dark:text-white">
+                            Aivora
+                        </h1>
+
+                        <p class="text-xs text-gray-500">
+                            AI Assistant
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Mobile close -->
+
+                <button
+                    onclick="toggleSidebar()"
+                    class="lg:hidden w-9 h-9
+                           rounded-lg
+                           hover:bg-gray-100
+                           dark:hover:bg-gray-800
+                           text-gray-500"
                 >
-                    <i class="fa-solid fa-robot text-xl"></i>
-                </div>
-
-                <div>
-                    <h1 class="font-bold text-lg text-gray-900 dark:text-white">
-                        AIVORA
-                    </h1>
-
-                    <p class="text-xs text-gray-500">
-                        Powered by Groq
-                    </p>
-                </div>
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
 
             </div>
 
         </div>
 
+
         <!-- New Chat -->
+
         <div class="p-4">
 
             <button
-                onclick="clearChat()"
+                onclick="clearChat(); closeSidebarOnMobile()"
                 class="w-full flex items-center justify-center gap-2
                        bg-blue-600 hover:bg-blue-700
                        text-white py-3 rounded-xl
                        transition shadow-md"
             >
+
                 <i class="fa-solid fa-plus"></i>
+
                 New Chat
+
             </button>
 
         </div>
 
-        <!-- Chat History -->
-        <!-- <div class="flex-1 px-4 overflow-y-auto">
 
-            <p class="text-xs font-semibold text-gray-400 uppercase mb-3">
+        <!-- Chat History -->
+
+        <div class="flex-1 px-4 overflow-y-auto">
+
+            <p
+                class="text-xs font-semibold
+                       text-gray-400 uppercase mb-3"
+            >
                 Recent Chats
             </p>
 
-            <div id="chatHistory">
 
-                <button
-                    class="w-full text-left p-3 rounded-lg
-                           hover:bg-gray-100 dark:hover:bg-gray-800
-                           text-gray-700 dark:text-gray-300
-                           text-sm flex items-center gap-3"
-                >
-                    <i class="fa-regular fa-message"></i>
-                    Current Conversation
-                </button>
+            <button
+                class="w-full text-left p-3 rounded-lg
+                       hover:bg-gray-100
+                       dark:hover:bg-gray-800
+                       text-gray-700
+                       dark:text-gray-300
+                       text-sm
+                       flex items-center gap-3"
+            >
 
-            </div>
+                <i class="fa-regular fa-message"></i>
 
-        </div> -->
+                Current Conversation
+
+            </button>
+
+        </div>
+
 
         <!-- Bottom -->
-        <div class="p-4 border-t border-gray-200 dark:border-gray-800">
+
+        <div
+            class="p-4
+                   border-t
+                   border-gray-200
+                   dark:border-gray-800"
+        >
 
             <button
                 onclick="toggleTheme()"
                 class="w-full flex items-center gap-3
                        p-3 rounded-lg
-                       hover:bg-gray-100 dark:hover:bg-gray-800
-                       text-gray-700 dark:text-gray-300"
+                       hover:bg-gray-100
+                       dark:hover:bg-gray-800
+                       text-gray-700
+                       dark:text-gray-300"
             >
-                <i id="themeIcon" class="fa-solid fa-moon"></i>
+
+                <i
+                    id="themeIcon"
+                    class="fa-solid fa-moon"
+                ></i>
 
                 <span id="themeText">
                     Dark Mode
                 </span>
+
             </button>
 
         </div>
@@ -121,34 +185,60 @@
 
 
     <!-- ================= MAIN ================= -->
-    <main class="flex-1 flex flex-col min-w-0">
+
+    <main class="flex-1 flex flex-col min-w-0 w-full">
+
 
         <!-- HEADER -->
+
         <header
-            class="h-16 bg-white dark:bg-gray-900
-                   border-b border-gray-200 dark:border-gray-800
-                   flex items-center justify-between px-5"
+            class="h-16 shrink-0
+                   bg-white dark:bg-gray-900
+                   border-b
+                   border-gray-200
+                   dark:border-gray-800
+                   flex items-center
+                   justify-between
+                   px-3 sm:px-5"
         >
 
             <div class="flex items-center gap-3">
 
-                <!-- Mobile sidebar -->
+                <!-- Mobile Menu -->
+
                 <button
                     onclick="toggleSidebar()"
-                    class="lg:hidden text-gray-600 dark:text-gray-300"
+                    class="lg:hidden
+                           w-10 h-10
+                           rounded-lg
+                           hover:bg-gray-100
+                           dark:hover:bg-gray-800
+                           text-gray-600
+                           dark:text-gray-300"
                 >
+
                     <i class="fa-solid fa-bars text-xl"></i>
+
                 </button>
+
 
                 <div>
 
-                    <h2 class="font-semibold text-gray-900 dark:text-white">
-                        AI Chat
+                    <h2
+                        class="font-semibold
+                               text-gray-900
+                               dark:text-white"
+                    >
+                        Aivora
                     </h2>
 
                     <div class="flex items-center gap-2">
 
-                        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+                        <span
+                            class="w-2 h-2
+                                   bg-green-500
+                                   rounded-full"
+                        ></span>
 
                         <span class="text-xs text-gray-500">
                             Online
@@ -161,63 +251,107 @@
             </div>
 
 
-            <!-- Header buttons -->
-            <div class="flex items-center gap-2">
+            <!-- Clear button -->
 
-                <button
-                    onclick="clearChat()"
-                    title="Clear chat"
-                    class="w-10 h-10 rounded-lg
-                           hover:bg-gray-100 dark:hover:bg-gray-800
-                           text-gray-600 dark:text-gray-300"
-                >
-                    <i class="fa-solid fa-trash"></i>
-                </button>
+            <button
+                onclick="clearChat()"
+                title="Clear chat"
+                class="w-10 h-10
+                       rounded-lg
+                       hover:bg-gray-100
+                       dark:hover:bg-gray-800
+                       text-gray-600
+                       dark:text-gray-300"
+            >
 
-            </div>
+                <i class="fa-solid fa-trash"></i>
+
+            </button>
 
         </header>
 
 
         <!-- ================= CHAT AREA ================= -->
+
         <section
             id="chatContainer"
-            class="flex-1 overflow-y-auto px-4 py-6"
+            class="flex-1
+                   overflow-y-auto
+                   px-3 sm:px-5
+                   py-4 sm:py-6"
         >
 
             <!-- Welcome -->
+
             <div
                 id="welcomeScreen"
-                class="max-w-3xl mx-auto flex flex-col items-center
-                       justify-center h-full text-center"
+                class="max-w-3xl
+                       mx-auto
+                       flex flex-col
+                       items-center
+                       justify-center
+                       min-h-full
+                       text-center
+                       py-8"
             >
 
                 <div
-                    class="w-20 h-20 rounded-3xl
-                           bg-blue-600 text-white
-                           flex items-center justify-center
-                           shadow-xl mb-6"
+                    class="w-16 h-16
+                           sm:w-20 sm:h-20
+                           rounded-3xl
+                           bg-blue-600
+                           text-white
+                           flex items-center
+                           justify-center
+                           shadow-xl
+                           mb-5 sm:mb-6"
                 >
-                    <i class="fa-solid fa-robot text-4xl"></i>
+
+                    <i
+                        class="fa-solid fa-robot
+                               text-3xl sm:text-4xl"
+                    ></i>
+
                 </div>
 
+
                 <h1
-                    class="text-3xl md:text-4xl font-bold
-                           text-gray-900 dark:text-white mb-3"
+                    class="text-2xl
+                           sm:text-3xl
+                           md:text-4xl
+                           font-bold
+                           text-gray-900
+                           dark:text-white
+                           mb-3"
                 >
                     How can I help you?
                 </h1>
 
-                <p class="text-gray-500 dark:text-gray-400 max-w-lg">
-                    Ask me anything. I can help you with coding,
-                    learning, ideas, explanations and much more.
+
+                <p
+                    class="text-sm
+                           sm:text-base
+                           text-gray-500
+                           dark:text-gray-400
+                           max-w-lg
+                           px-3"
+                >
+                    Ask me anything. I can help you with
+                    coding, learning, ideas, explanations
+                    and much more.
                 </p>
 
 
                 <!-- Suggestions -->
+
                 <div
-                    class="grid grid-cols-1 md:grid-cols-2
-                           gap-3 mt-8 w-full max-w-xl"
+                    class="grid
+                           grid-cols-1
+                           sm:grid-cols-2
+                           gap-3
+                           mt-7
+                           w-full
+                           max-w-xl"
                 >
 
                     <button
@@ -225,31 +359,50 @@
                         class="suggestion"
                     >
                         <i class="fa-solid fa-code"></i>
-                        Explain Python functions
+
+                        <span>
+                            Explain Python functions
+                        </span>
+
                     </button>
+
 
                     <button
                         onclick="useSuggestion('Give me a coding challenge')"
                         class="suggestion"
                     >
                         <i class="fa-solid fa-terminal"></i>
-                        Give me a coding challenge
+
+                        <span>
+                            Give me a coding challenge
+                        </span>
+
                     </button>
+
 
                     <button
                         onclick="useSuggestion('Explain artificial intelligence')"
                         class="suggestion"
                     >
                         <i class="fa-solid fa-brain"></i>
-                        Explain AI
+
+                        <span>
+                            Explain AI
+                        </span>
+
                     </button>
+
 
                     <button
                         onclick="useSuggestion('Help me build a project')"
                         class="suggestion"
                     >
                         <i class="fa-solid fa-lightbulb"></i>
-                        Help me build a project
+
+                        <span>
+                            Help me build a project
+                        </span>
+
                     </button>
 
                 </div>
@@ -258,23 +411,38 @@
 
 
             <!-- Messages -->
+
             <div
                 id="messages"
-                class="max-w-4xl mx-auto space-y-6 hidden"
+                class="max-w-4xl
+                       mx-auto
+                       space-y-5 sm:space-y-6
+                       hidden"
             ></div>
 
         </section>
 
 
         <!-- ================= INPUT ================= -->
-        <footer class="p-4 bg-gray-100 dark:bg-gray-950">
+
+        <footer
+            class="shrink-0
+                   p-2 sm:p-4
+                   bg-gray-100
+                   dark:bg-gray-950"
+        >
 
             <div class="max-w-4xl mx-auto">
 
                 <div
-                    class="relative bg-white dark:bg-gray-900
-                           border border-gray-300 dark:border-gray-700
-                           rounded-2xl shadow-lg
+                    class="relative
+                           bg-white
+                           dark:bg-gray-900
+                           border
+                           border-gray-300
+                           dark:border-gray-700
+                           rounded-2xl
+                           shadow-lg
                            focus-within:border-blue-500
                            transition"
                 >
@@ -282,34 +450,55 @@
                     <textarea
                         id="messageInput"
                         rows="1"
-                        placeholder="Message AI Assistant..."
-                        class="w-full resize-none
+                        placeholder="Message Aivora..."
+                        class="w-full
+                               resize-none
                                bg-transparent
-                               text-gray-900 dark:text-white
+                               text-gray-900
+                               dark:text-white
                                placeholder-gray-400
                                outline-none
-                               px-5 py-4 pr-16
-                               max-h-40"
+                               px-4 sm:px-5
+                               py-3.5 sm:py-4
+                               pr-14
+                               max-h-40
+                               text-sm sm:text-base"
                     ></textarea>
 
 
                     <button
                         id="sendButton"
                         onclick="sendMessage()"
-                        class="absolute right-3 bottom-3
-                               w-10 h-10 rounded-xl
-                               bg-blue-600 hover:bg-blue-700
+                        class="absolute
+                               right-2
+                               bottom-2
+                               w-10 h-10
+                               rounded-xl
+                               bg-blue-600
+                               hover:bg-blue-700
                                text-white
-                               flex items-center justify-center
+                               flex items-center
+                               justify-center
                                transition"
                     >
+
                         <i class="fa-solid fa-arrow-up"></i>
+
                     </button>
 
                 </div>
 
-                <p class="text-center text-xs text-gray-400 mt-3">
-                    AIVORA can make mistakes. Verify important information.
+
+                <p
+                    class="text-center
+                           text-[10px]
+                           sm:text-xs
+                           text-gray-400
+                           mt-2 sm:mt-3
+                           px-2"
+                >
+                    Aivora can make mistakes.
+                    Verify important information.
                 </p>
 
             </div>
@@ -321,46 +510,64 @@
 </div>
 
 
-<!-- ================= JAVASCRIPT ================= -->
-
 <script>
 
-    const messageInput = document.getElementById("messageInput");
-    const messages = document.getElementById("messages");
-    const welcomeScreen = document.getElementById("welcomeScreen");
-    const chatContainer = document.getElementById("chatContainer");
-    const sendButton = document.getElementById("sendButton");
+const messageInput =
+    document.getElementById("messageInput");
+
+const messages =
+    document.getElementById("messages");
+
+const welcomeScreen =
+    document.getElementById("welcomeScreen");
+
+const chatContainer =
+    document.getElementById("chatContainer");
+
+const sendButton =
+    document.getElementById("sendButton");
+
+const sidebar =
+    document.getElementById("sidebar");
+
+const sidebarOverlay =
+    document.getElementById("sidebarOverlay");
 
 
-    // ================= SEND MESSAGE =================
+// ================= SEND MESSAGE =================
 
-    async function sendMessage() {
+async function sendMessage() {
 
-        const userInput = messageInput.value.trim();
+    const userInput =
+        messageInput.value.trim();
 
-        if (!userInput) return;
+    if (!userInput) return;
 
-        // Show chat area
-        welcomeScreen.classList.add("hidden");
-        messages.classList.remove("hidden");
 
-        // Add user message
-        addMessage(userInput, "user");
+    welcomeScreen.classList.add("hidden");
 
-        // Clear input
-        messageInput.value = "";
+    messages.classList.remove("hidden");
 
-        autoResize();
 
-        // Disable button
-        sendButton.disabled = true;
+    addMessage(userInput, "user");
 
-        // Show typing indicator
-        const typingId = showTyping();
 
-        try {
+    messageInput.value = "";
 
-            const response = await fetch("/chat", {
+    autoResize();
+
+
+    sendButton.disabled = true;
+
+
+    const typingId =
+        showTyping();
+
+
+    try {
+
+        const response =
+            await fetch("/chat", {
 
                 method: "POST",
 
@@ -375,333 +582,453 @@
             });
 
 
-            if (!response.ok) {
-                throw new Error("Server error");
-            }
-
-
-            const data = await response.json();
-
-            removeTyping(typingId);
-
-            addMessage(data.reply, "assistant");
-
+        if (!response.ok) {
+            throw new Error("Server error");
         }
 
-        catch (error) {
 
-            removeTyping(typingId);
+        const data =
+            await response.json();
 
-            addMessage(
-                "⚠️ Unable to connect to the AI server. Please make sure your Flask backend is running.",
-                "assistant"
-            );
 
-            console.error(error);
+        removeTyping(typingId);
 
-        }
 
-        finally {
-
-            sendButton.disabled = false;
-
-            messageInput.focus();
-
-        }
+        addMessage(
+            data.reply,
+            "assistant"
+        );
 
     }
 
+    catch (error) {
 
-    // ================= ADD MESSAGE =================
+        removeTyping(typingId);
 
-    function addMessage(text, sender) {
+        addMessage(
+            "⚠️ Unable to connect to Aivora. Please check the server.",
+            "assistant"
+        );
 
-        const wrapper = document.createElement("div");
-
-        wrapper.className =
-            sender === "user"
-            ? "flex justify-end"
-            : "flex justify-start";
-
-
-        if (sender === "user") {
-
-            wrapper.innerHTML = `
-
-                <div class="flex items-start gap-3 max-w-[85%]">
-
-                    <div
-                        class="bg-blue-600 text-white
-                               rounded-2xl rounded-tr-md
-                               px-5 py-3 shadow-sm"
-                    >
-                        <p class="whitespace-pre-wrap break-words">
-                            ${escapeHTML(text)}
-                        </p>
-                    </div>
-
-                    <div
-                        class="w-9 h-9 shrink-0
-                               rounded-full bg-gray-700
-                               text-white
-                               flex items-center justify-center"
-                    >
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-
-                </div>
-
-            `;
-
-        }
-
-        else {
-
-            wrapper.innerHTML = `
-
-                <div class="flex items-start gap-3 max-w-[90%]">
-
-                    <div
-                        class="w-9 h-9 shrink-0
-                               rounded-full bg-blue-600
-                               text-white
-                               flex items-center justify-center"
-                    >
-                        <i class="fa-solid fa-robot"></i>
-                    </div>
-
-                    <div
-                        class="bg-white dark:bg-gray-900
-                               border border-gray-200
-                               dark:border-gray-800
-                               rounded-2xl rounded-tl-md
-                               px-5 py-3 shadow-sm"
-                    >
-
-                        <p
-                            class="text-gray-800 dark:text-gray-200
-                                   whitespace-pre-wrap break-words"
-                        >
-                            ${escapeHTML(text)}
-                        </p>
-
-                        <div class="mt-3 flex gap-2">
-
-                            <button
-                                onclick="copyMessage(this)"
-                                class="text-gray-400 hover:text-blue-500 text-xs"
-                            >
-                                <i class="fa-regular fa-copy"></i>
-                                Copy
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                </div>
-
-            `;
-
-        }
-
-
-        messages.appendChild(wrapper);
-
-        scrollToBottom();
+        console.error(error);
 
     }
 
+    finally {
 
-    // ================= TYPING =================
+        sendButton.disabled = false;
 
-    function showTyping() {
+        messageInput.focus();
 
-        const id = "typing-" + Date.now();
+    }
 
-        const wrapper = document.createElement("div");
+}
 
-        wrapper.id = id;
 
-        wrapper.className = "flex justify-start";
+// ================= ADD MESSAGE =================
 
+function addMessage(text, sender) {
+
+    const wrapper =
+        document.createElement("div");
+
+
+    wrapper.className =
+        sender === "user"
+        ? "flex justify-end"
+        : "flex justify-start";
+
+
+    if (sender === "user") {
 
         wrapper.innerHTML = `
 
-            <div class="flex items-start gap-3">
+            <div class="flex items-start gap-2 sm:gap-3
+                        max-w-[92%] sm:max-w-[85%]">
 
                 <div
-                    class="w-9 h-9 rounded-full
-                           bg-blue-600 text-white
-                           flex items-center justify-center"
+                    class="bg-blue-600
+                           text-white
+                           rounded-2xl
+                           rounded-tr-md
+                           px-4 sm:px-5
+                           py-3
+                           shadow-sm
+                           overflow-hidden"
                 >
-                    <i class="fa-solid fa-robot"></i>
+
+                    <p class="whitespace-pre-wrap
+                              break-words
+                              text-sm sm:text-base">
+                        ${escapeHTML(text)}
+                    </p>
+
                 </div>
 
+
                 <div
-                    class="bg-white dark:bg-gray-900
-                           border border-gray-200 dark:border-gray-800
-                           rounded-2xl rounded-tl-md
-                           px-5 py-4"
+                    class="w-8 h-8 sm:w-9 sm:h-9
+                           shrink-0
+                           rounded-full
+                           bg-gray-700
+                           text-white
+                           flex items-center
+                           justify-center"
                 >
 
-                    <div class="flex gap-1">
+                    <i class="fa-solid fa-user text-xs sm:text-sm"></i>
 
-                        <span class="typing-dot"></span>
-                        <span class="typing-dot"></span>
-                        <span class="typing-dot"></span>
+                </div>
+
+            </div>
+        `;
+
+    }
+
+    else {
+
+        wrapper.innerHTML = `
+
+            <div class="flex items-start
+                        gap-2 sm:gap-3
+                        max-w-[96%] sm:max-w-[90%]">
+
+                <div
+                    class="w-8 h-8 sm:w-9 sm:h-9
+                           shrink-0
+                           rounded-full
+                           bg-blue-600
+                           text-white
+                           flex items-center
+                           justify-center"
+                >
+
+                    <i class="fa-solid fa-robot text-xs sm:text-sm"></i>
+
+                </div>
+
+
+                <div
+                    class="bg-white
+                           dark:bg-gray-900
+                           border
+                           border-gray-200
+                           dark:border-gray-800
+                           rounded-2xl
+                           rounded-tl-md
+                           px-4 sm:px-5
+                           py-3
+                           shadow-sm
+                           min-w-0
+                           overflow-hidden"
+                >
+
+                    <p
+                        class="text-gray-800
+                               dark:text-gray-200
+                               whitespace-pre-wrap
+                               break-words
+                               text-sm sm:text-base"
+                    >
+                        ${escapeHTML(text)}
+                    </p>
+
+
+                    <div class="mt-3 flex gap-2">
+
+                        <button
+                            onclick="copyMessage(this)"
+                            class="text-gray-400
+                                   hover:text-blue-500
+                                   text-xs"
+                        >
+
+                            <i class="fa-regular fa-copy"></i>
+                            Copy
+
+                        </button>
 
                     </div>
 
                 </div>
 
             </div>
-
         `;
 
-        messages.appendChild(wrapper);
-
-        scrollToBottom();
-
-        return id;
-
     }
 
 
-    function removeTyping(id) {
+    messages.appendChild(wrapper);
 
-        const element = document.getElementById(id);
+    scrollToBottom();
 
-        if (element) {
-            element.remove();
-        }
+}
 
+
+// ================= TYPING =================
+
+function showTyping() {
+
+    const id =
+        "typing-" + Date.now();
+
+
+    const wrapper =
+        document.createElement("div");
+
+
+    wrapper.id = id;
+
+    wrapper.className =
+        "flex justify-start";
+
+
+    wrapper.innerHTML = `
+
+        <div class="flex items-start gap-2 sm:gap-3">
+
+            <div
+                class="w-8 h-8 sm:w-9 sm:h-9
+                       rounded-full
+                       bg-blue-600
+                       text-white
+                       flex items-center
+                       justify-center"
+            >
+
+                <i class="fa-solid fa-robot text-xs"></i>
+
+            </div>
+
+
+            <div
+                class="bg-white
+                       dark:bg-gray-900
+                       border
+                       border-gray-200
+                       dark:border-gray-800
+                       rounded-2xl
+                       rounded-tl-md
+                       px-5 py-4"
+            >
+
+                <div class="flex gap-1">
+
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    messages.appendChild(wrapper);
+
+    scrollToBottom();
+
+    return id;
+
+}
+
+
+function removeTyping(id) {
+
+    const element =
+        document.getElementById(id);
+
+    if (element) {
+        element.remove();
     }
 
+}
 
-    // ================= COPY =================
 
-    function copyMessage(button) {
+// ================= COPY =================
 
-        const message =
-            button.closest(".bg-white, .dark\\:bg-gray-900")
-                  .querySelector("p")
-                  .innerText;
+function copyMessage(button) {
 
-        navigator.clipboard.writeText(message);
+    const container =
+        button.closest(
+            ".bg-white, .dark\\:bg-gray-900"
+        );
+
+
+    const message =
+        container.querySelector("p").innerText;
+
+
+    navigator.clipboard.writeText(message);
+
+
+    button.innerHTML =
+        '<i class="fa-solid fa-check"></i> Copied';
+
+
+    setTimeout(() => {
 
         button.innerHTML =
-            '<i class="fa-solid fa-check"></i> Copied';
+            '<i class="fa-regular fa-copy"></i> Copy';
 
-        setTimeout(() => {
+    }, 1500);
 
-            button.innerHTML =
-                '<i class="fa-regular fa-copy"></i> Copy';
-
-        }, 1500);
-
-    }
+}
 
 
-    // ================= CLEAR CHAT =================
+// ================= CLEAR =================
 
-    function clearChat() {
+function clearChat() {
 
-        messages.innerHTML = "";
+    messages.innerHTML = "";
 
-        messages.classList.add("hidden");
+    messages.classList.add("hidden");
 
-        welcomeScreen.classList.remove("hidden");
+    welcomeScreen.classList.remove("hidden");
 
-        messageInput.value = "";
+    messageInput.value = "";
 
-        messageInput.focus();
+    messageInput.focus();
 
-    }
-
-
-    // ================= SUGGESTION =================
-
-    function useSuggestion(text) {
-
-        messageInput.value = text;
-
-        sendMessage();
-
-    }
+}
 
 
-    // ================= THEME =================
+// ================= SUGGESTION =================
 
-    function toggleTheme() {
+function useSuggestion(text) {
 
-        document.documentElement.classList.toggle("dark");
+    messageInput.value = text;
 
-        const isDark =
-            document.documentElement.classList.contains("dark");
+    closeSidebarOnMobile();
 
-        localStorage.setItem("darkMode", isDark);
+    sendMessage();
 
-        updateThemeButton();
-
-    }
+}
 
 
-    function updateThemeButton() {
+// ================= THEME =================
 
-        const isDark =
-            document.documentElement.classList.contains("dark");
+function toggleTheme() {
 
-        const icon =
-            document.getElementById("themeIcon");
-
-        const text =
-            document.getElementById("themeText");
-
-        if (isDark) {
-
-            icon.className = "fa-solid fa-sun";
-            text.innerText = "Light Mode";
-
-        }
-
-        else {
-
-            icon.className = "fa-solid fa-moon";
-            text.innerText = "Dark Mode";
-
-        }
-
-    }
+    document.documentElement
+        .classList.toggle("dark");
 
 
-    // Load theme
-    if (localStorage.getItem("darkMode") === "true") {
+    const isDark =
+        document.documentElement
+        .classList.contains("dark");
 
-        document.documentElement.classList.add("dark");
 
-    }
+    localStorage.setItem(
+        "darkMode",
+        isDark
+    );
+
 
     updateThemeButton();
 
+}
 
-    // ================= SIDEBAR =================
 
-    function toggleSidebar() {
+function updateThemeButton() {
 
-        const sidebar =
-            document.getElementById("sidebar");
+    const isDark =
+        document.documentElement
+        .classList.contains("dark");
 
-        sidebar.classList.toggle("-translate-x-full");
+
+    const icon =
+        document.getElementById("themeIcon");
+
+
+    const text =
+        document.getElementById("themeText");
+
+
+    if (isDark) {
+
+        icon.className =
+            "fa-solid fa-sun";
+
+        text.innerText =
+            "Light Mode";
 
     }
 
+    else {
 
-    // ================= ENTER KEY =================
+        icon.className =
+            "fa-solid fa-moon";
 
-    messageInput.addEventListener("keydown", function(event) {
+        text.innerText =
+            "Dark Mode";
 
-        if (event.key === "Enter" && !event.shiftKey) {
+    }
+
+}
+
+
+if (
+    localStorage.getItem("darkMode")
+    === "true"
+) {
+
+    document.documentElement
+        .classList.add("dark");
+
+}
+
+
+updateThemeButton();
+
+
+// ================= SIDEBAR =================
+
+function toggleSidebar() {
+
+    sidebar.classList.toggle(
+        "-translate-x-full"
+    );
+
+    sidebarOverlay.classList.toggle(
+        "hidden"
+    );
+
+}
+
+
+function closeSidebarOnMobile() {
+
+    if (
+        window.innerWidth < 1024
+    ) {
+
+        sidebar.classList.add(
+            "-translate-x-full"
+        );
+
+        sidebarOverlay.classList.add(
+            "hidden"
+        );
+
+    }
+
+}
+
+
+// ================= ENTER =================
+
+messageInput.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Enter"
+            && !event.shiftKey
+        ) {
 
             event.preventDefault();
 
@@ -709,143 +1036,197 @@
 
         }
 
-    });
-
-
-    // ================= AUTO RESIZE =================
-
-    messageInput.addEventListener("input", autoResize);
-
-    function autoResize() {
-
-        messageInput.style.height = "auto";
-
-        messageInput.style.height =
-            Math.min(messageInput.scrollHeight, 160) + "px";
-
     }
+);
 
 
-    // ================= SCROLL =================
+// ================= AUTO RESIZE =================
 
-    function scrollToBottom() {
-
-        setTimeout(() => {
-
-            chatContainer.scrollTop =
-                chatContainer.scrollHeight;
-
-        }, 50);
-
-    }
+messageInput.addEventListener(
+    "input",
+    autoResize
+);
 
 
-    // ================= HTML ESCAPE =================
+function autoResize() {
 
-    function escapeHTML(text) {
+    messageInput.style.height =
+        "auto";
 
-        const div = document.createElement("div");
 
-        div.textContent = text;
+    messageInput.style.height =
+        Math.min(
+            messageInput.scrollHeight,
+            160
+        ) + "px";
 
-        return div.innerHTML;
+}
 
-    }
+
+// ================= SCROLL =================
+
+function scrollToBottom() {
+
+    setTimeout(() => {
+
+        chatContainer.scrollTop =
+            chatContainer.scrollHeight;
+
+    }, 50);
+
+}
+
+
+// ================= ESCAPE HTML =================
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+
+}
 
 </script>
 
 
 <style>
 
-    .suggestion {
+.suggestion {
 
-        display: flex;
-        align-items: center;
-        gap: 12px;
+    display: flex;
 
-        padding: 16px;
+    align-items: center;
 
-        border: 1px solid rgb(229 231 235);
+    gap: 12px;
 
-        border-radius: 12px;
+    padding: 14px;
 
-        text-align: left;
+    border: 1px solid rgb(229 231 235);
 
-        color: rgb(55 65 81);
+    border-radius: 12px;
 
-        background: white;
+    text-align: left;
 
-        transition: 0.2s;
+    color: rgb(55 65 81);
+
+    background: white;
+
+    transition: 0.2s;
+
+}
+
+
+.suggestion:hover {
+
+    border-color: rgb(59 130 246);
+
+    transform: translateY(-2px);
+
+    box-shadow:
+        0 5px 15px
+        rgba(0,0,0,0.08);
+
+}
+
+
+.dark .suggestion {
+
+    background: rgb(17 24 39);
+
+    border-color: rgb(55 65 81);
+
+    color: rgb(209 213 219);
+
+}
+
+
+.typing-dot {
+
+    width: 7px;
+
+    height: 7px;
+
+    background: #9ca3af;
+
+    border-radius: 50%;
+
+    animation:
+        typing 1.4s
+        infinite
+        ease-in-out;
+
+}
+
+
+.typing-dot:nth-child(2) {
+
+    animation-delay: 0.2s;
+
+}
+
+
+.typing-dot:nth-child(3) {
+
+    animation-delay: 0.4s;
+
+}
+
+
+@keyframes typing {
+
+    0%, 60%, 100% {
+
+        transform:
+            translateY(0);
+
+        opacity: 0.4;
 
     }
 
-    .suggestion:hover {
+    30% {
 
-        border-color: rgb(59 130 246);
+        transform:
+            translateY(-5px);
 
-        transform: translateY(-2px);
-
-        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
-
-    }
-
-    .dark .suggestion {
-
-        background: rgb(17 24 39);
-
-        border-color: rgb(55 65 81);
-
-        color: rgb(209 213 219);
+        opacity: 1;
 
     }
 
-
-    .typing-dot {
-
-        width: 7px;
-
-        height: 7px;
-
-        background: #9ca3af;
-
-        border-radius: 50%;
-
-        animation: typing 1.4s infinite ease-in-out;
-
-    }
-
-    .typing-dot:nth-child(2) {
-
-        animation-delay: 0.2s;
-
-    }
-
-    .typing-dot:nth-child(3) {
-
-        animation-delay: 0.4s;
-
-    }
+}
 
 
-    @keyframes typing {
+/* Prevent horizontal overflow */
 
-        0%, 60%, 100% {
+html,
+body {
 
-            transform: translateY(0);
+    max-width: 100%;
 
-            opacity: 0.4;
+    overflow-x: hidden;
 
-        }
+}
 
-        30% {
 
-            transform: translateY(-5px);
+/* Better mobile scrollbar */
 
-            opacity: 1;
+::-webkit-scrollbar {
 
-        }
+    width: 5px;
 
-    }
+}
+
+
+::-webkit-scrollbar-thumb {
+
+    background: #9ca3af;
+
+    border-radius: 10px;
+
+}
 
 </style>
 
